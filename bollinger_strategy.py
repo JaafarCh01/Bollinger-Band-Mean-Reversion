@@ -56,8 +56,16 @@ class BollingerMeanReversionStrategy:
         self.data['Time'] = pd.to_datetime(self.data['Time (EET)'])
         self.data.set_index('Time', inplace=True)
         
-        # Clean column names
-        self.data.columns = ['Open', 'High', 'Low', 'Close', 'Volume']
+        # Drop the original time column and clean column names
+        self.data.drop('Time (EET)', axis=1, inplace=True)
+        
+        # Clean column names (strip any whitespace)
+        self.data.columns = self.data.columns.str.strip()
+        
+        # Ensure we have the expected columns
+        expected_columns = ['Open', 'High', 'Low', 'Close', 'Volume']
+        if list(self.data.columns) != expected_columns:
+            self.data.columns = expected_columns
         
         print(f"Data loaded successfully: {len(self.data)} rows")
         print(f"Date range: {self.data.index[0]} to {self.data.index[-1]}")
